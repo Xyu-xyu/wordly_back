@@ -33,11 +33,6 @@ app.listen(port, () => {
 });
 
 
-app.get('/get_word', (req, res) => {
-    res.send('Hello, this is your Express server!');
-});
-
-
 app.get('/get_word/:wordLength', (req, res) => {
     const wordLength = parseInt(req.params.wordLength, 10); // Get the word length from the request URL and convert to integer
   
@@ -71,6 +66,32 @@ app.get('/get_word/:wordLength', (req, res) => {
         // Send the selected word as the response
         res.json({ word: randomWord });
       });
+    });
+  });
+
+
+  app.get('/check_word/:word', (req, res) => {
+    const word = req.params.word; // Get the word length from the request URL and convert to integer
+    console.log ( word )
+    console.log ( word )
+
+      // Prepare the SQL query to fetch a random word with the specified length
+    const query = `SELECT WORD FROM NOUNS WHERE WORD = ?`;
+  
+    // Execute the query using the connection pool
+    pool.query(query, [word], (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err.message);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      if (results.length === 0) {
+        // If no word with the specified length is found, send an empty response
+        return res.status(200).json({ word: false});
+      }
+
+      res.json({ word: true });
+      
     });
   });
   
